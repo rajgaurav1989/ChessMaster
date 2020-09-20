@@ -19,11 +19,12 @@ public class Receiver extends Thread{
             BufferedReader br = new BufferedReader(new InputStreamReader(this.inputSocket.getInputStream()));
             while(true){
                 String msg = br.readLine() ;
-                System.out.println(msg);
+                System.out.println("From Server : " +msg);
                 if (msg == null){
                     break;
                 }
             }
+            br.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -5,9 +5,7 @@ import com.raju.graphics.service.ShapeService;
 import com.raju.messanger.Sender;
 import javafx.event.EventHandler;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 
 public class ChessController {
     private static ChessController chessController ;
@@ -25,7 +23,10 @@ public class ChessController {
     public EventHandler getClickEventHandler(Block selectedBlock) {
         EventHandler eventHandler = event -> {
             ShapeService.getInstance().setSelectedBlock(selectedBlock);
-            System.out.println("handle click event Raj "+ShapeService.getInstance().getSelectedBlock().getNode().getId());
+            String msg = "handle click event "+ShapeService.getInstance().getSelectedBlock().getNode().getId();
+            PrintWriter pw = Sender.getPrintWriter();
+            pw.println(msg);
+            pw.flush();
         };
         return eventHandler;
     }
