@@ -8,7 +8,7 @@ public class Block {
     private Group node;
     private boolean isFree = true;
     private int blockNum;
-    private boolean isWhite;
+    private Boolean isWhite = null;
     private PieceType pieceType;
 
     public Block(Group node, int blockNum, boolean isWhite) {
@@ -41,11 +41,11 @@ public class Block {
         this.blockNum = blockNum;
     }
 
-    public boolean isWhite() {
+    public Boolean getWhite() {
         return isWhite;
     }
 
-    public void setWhite(boolean white) {
+    public void setWhite(Boolean white) {
         isWhite = white;
     }
 

@@ -20,12 +20,14 @@ public class ChessController {
         return chessController;
     }
 
-    public EventHandler getClickEventHandler(Block selectedBlock) {
+    public EventHandler getClickEventHandler(Block selectedBlock,boolean isWhite) {
         EventHandler eventHandler = event -> {
+            if (selectedBlock.isFree() || selectedBlock.getWhite() == null || selectedBlock.getWhite() != isWhite){
+                return;
+            }
             ShapeService.getInstance().setSelectedBlock(selectedBlock);
-            String msg = "handle click event "+ShapeService.getInstance().getSelectedBlock().getNode().getId();
             PrintWriter pw = Sender.getPrintWriter();
-            pw.println(msg);
+            pw.println(selectedBlock.getBlockNum());
             pw.flush();
         };
         return eventHandler;

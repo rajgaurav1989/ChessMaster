@@ -58,7 +58,7 @@ public class ShapeService {
         group.translateXProperty().set(xCoord);
         group.translateYProperty().set(yCoord);
         group.setId(String.valueOf(blockNum));
-        group.setOnMouseClicked(ChessController.getInstance().getClickEventHandler(block));
+        group.setOnMouseClicked(ChessController.getInstance().getClickEventHandler(block,isWhite));
         blockMap.put(blockNum,block);
         return group;
     }
@@ -71,6 +71,7 @@ public class ShapeService {
         imageView.setFitWidth(ProjectConstants.CELL_SIZE);
         block.setPieceType(ProjectConstants.initialPieceTypeMap.get(blockNum));
         block.setFree(false);
+        block.setWhite(blockNum >= 0 && blockNum <= 15 ? true : false);
         group.getChildren().add(imageView);
         group.getChildren().add(rectangle);
         rectangle.setOpacity(ProjectConstants.OPACITY_FACTOR);
