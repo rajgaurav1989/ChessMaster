@@ -4,20 +4,29 @@ import com.raju.graphics.enums.MovementLimit;
 import com.raju.graphics.enums.MovementType;
 import com.raju.graphics.enums.PieceType;
 import com.raju.graphics.models.PieceInfo;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ProjectConstants {
+    private ProjectConstants() {
+
+    }
+
     public static final String LOCALHOST_IP_KEY = "127.0.0.1";
     public static final int CELL_SIZE = 80;
-    public static final int NUM_CELLS = 8;
-    public static final int WINDOW_SIZE = CELL_SIZE * NUM_CELLS;
+    public static final int NUM_CELLS_IN_ROW = 8;
+    public static final int NUM_ROWS = 8;
+    public static final int WINDOW_SIZE = CELL_SIZE * NUM_CELLS_IN_ROW;
     public static final String TITLE = "Raj's Chess Master";
     public static final float OPACITY_FACTOR = 0.20f;
-    public static final float FULL_OPACITY_FACTOR = 1f ;
+    public static final float FULL_OPACITY_FACTOR = 1f;
     public static final int WHITE_BOARD_ROTATION_ANGLE = 180;
+    public static final String EVENT_SEPARATOR = "\t";
+    public static final Color TARGET_COLOR = Color.GREEN;
+    public static final Color CHECK_MOVE_COLOR = Color.RED;
 
     public static final Map<Integer, String> pathMap = new HashMap<Integer, String>() {
         {
@@ -116,8 +125,7 @@ public class ProjectConstants {
                 add(MovementType.DIAGONAL);
             }}, MovementLimit.UNBOUNDED));
             put(PieceType.PAWN, new PieceInfo(new ArrayList<MovementType>() {{
-                add(MovementType.LINEAR);
-                add(MovementType.DIAGONAL);
+                add(MovementType.PAWNISH);
             }}, MovementLimit.SINGLE_FORWARD));
         }
     };

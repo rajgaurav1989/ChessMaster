@@ -15,7 +15,7 @@ import java.net.Socket;
 
 
 public class ChessMaster extends Application {
-
+    private static boolean isfirstPlayer ;
     public static void main(String[] args) {
         try {
             startSocket(args);
@@ -31,24 +31,22 @@ public class ChessMaster extends Application {
             String clientIP = args[0];
             int listenPort = Integer.parseInt(args[1]);
             int sendPort = Integer.parseInt(args[2]);
-            boolean isfirst = Boolean.parseBoolean(args[3].toLowerCase());
+            isfirstPlayer = Boolean.parseBoolean(args[3].toLowerCase());
 
             ServerSocket serverSocket;
             Socket sendSocket;
             Socket receiveSocket;
-            if (isfirst) {
-                shapeService.setWhite(true);
+            if (isfirstPlayer) {
                 serverSocket = new ServerSocket(listenPort);
                 receiveSocket = serverSocket.accept();
                 sendSocket = new Socket(clientIP, sendPort);
             } else {
-                shapeService.setWhite(false);
                 sendSocket = new Socket(clientIP, sendPort);
                 serverSocket = new ServerSocket(listenPort);
                 receiveSocket = serverSocket.accept();
             }
             Sender sender = new Sender(sendSocket);
-            Receiver receiver = new Receiver(receiveSocket);
+            Receiver receiver = Receiver.getInstance(receiveSocket);
 
             sender.start();
             receiver.start();
@@ -62,7 +60,7 @@ public class ChessMaster extends Application {
     public void start(Stage primaryStage) throws Exception {
         Camera camera = new PerspectiveCamera();
         ShapeService shapeService = ShapeService.getInstance();
-        Scene chessScene = new Scene(shapeService.getChessBoard(), ProjectConstants.WINDOW_SIZE, ProjectConstants.WINDOW_SIZE);
+        Scene chessScene = new Scene(shapeService.getChessBoard(isfirstPlayer), ProjectConstants.WINDOW_SIZE, ProjectConstants.WINDOW_SIZE);
         chessScene.setCamera(camera);
 
         primaryStage.setTitle(ProjectConstants.TITLE);

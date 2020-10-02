@@ -20,8 +20,11 @@ import java.util.Map;
 public class ShapeService {
     private static ShapeService shapeService;
     private Map<Integer, Block> blockMap = new HashMap<>();
-    private boolean isWhite;
-    private Block selectedBlock = null ;
+    private boolean isfirstPlayer;
+    private boolean isMyTurn;
+    private Block selectedBlock;
+    private Block destinationBlock;
+    private List<Block> targetBlockList;
 
     private ShapeService() {
 
@@ -36,8 +39,8 @@ public class ShapeService {
 
     private Node getBlock(int blockNum) {
         Group group = new Group();
-        int rowNum = blockNum / ProjectConstants.NUM_CELLS;
-        int colNum = blockNum % ProjectConstants.NUM_CELLS;
+        int rowNum = blockNum / ProjectConstants.NUM_CELLS_IN_ROW;
+        int colNum = blockNum % ProjectConstants.NUM_CELLS_IN_ROW;
 
         double xCoord = colNum * ProjectConstants.CELL_SIZE;
         double yCoord = rowNum * ProjectConstants.CELL_SIZE;
@@ -48,22 +51,21 @@ public class ShapeService {
 
         Rectangle rectangle = new Rectangle(ProjectConstants.CELL_SIZE, ProjectConstants.CELL_SIZE, fillColor);
 
-        Block block = new Block(group,blockNum,fillColor == Color.WHITE);
-        if(ProjectConstants.initialPieceTypeMap.containsKey(blockNum)){
-            addChessPieces(block,rectangle);
-        }
-        else {
+        Block block = new Block(group, blockNum, fillColor == Color.WHITE);
+        if (ProjectConstants.initialPieceTypeMap.containsKey(blockNum)) {
+            addChessPieces(block, rectangle);
+        } else {
             group.getChildren().add(rectangle);
         }
         group.translateXProperty().set(xCoord);
         group.translateYProperty().set(yCoord);
         group.setId(String.valueOf(blockNum));
-        group.setOnMouseClicked(ChessController.getInstance().getClickEventHandler(block,isWhite));
-        blockMap.put(blockNum,block);
+        group.setOnMouseClicked(ChessController.getInstance().getClickEventHandler(shapeService, block, isfirstPlayer,isMyTurn));
+        blockMap.put(blockNum, block);
         return group;
     }
 
-    private void addChessPieces(Block block,Rectangle rectangle){
+    private void addChessPieces(Block block, Rectangle rectangle) {
         Group group = block.getNode();
         int blockNum = block.getBlockNum();
         ImageView imageView = new ImageView(new Image(ProjectConstants.pathMap.get(blockNum)));
@@ -71,47 +73,61 @@ public class ShapeService {
         imageView.setFitWidth(ProjectConstants.CELL_SIZE);
         block.setPieceType(ProjectConstants.initialPieceTypeMap.get(blockNum));
         block.setFree(false);
-        block.setWhite(blockNum >= 0 && blockNum <= 15 ? true : false);
+        block.setWhite(blockNum >= 0 && blockNum <= 15);
         group.getChildren().add(imageView);
         group.getChildren().add(rectangle);
         rectangle.setOpacity(ProjectConstants.OPACITY_FACTOR);
-        blockMap.put(blockNum,block);
+        blockMap.put(blockNum, block);
     }
 
-    public Group getChessBoard() {
-        int numCells = ProjectConstants.NUM_CELLS * ProjectConstants.NUM_CELLS;
+    public Group getChessBoard(boolean isFirstPlayer) {
+        this.isfirstPlayer = isFirstPlayer;
+        this.isMyTurn = isFirstPlayer;
+        int numCells = ProjectConstants.NUM_CELLS_IN_ROW * ProjectConstants.NUM_CELLS_IN_ROW;
         List<Node> chessBlocks = new ArrayList<>();
         for (int boardIndex = 0; boardIndex < numCells; boardIndex++) {
             chessBlocks.add(getBlock(boardIndex));
         }
         Group chessGroup = new Group();
         chessGroup.getChildren().addAll(chessBlocks);
-        if (isWhite) {
+        if (isFirstPlayer) {
             Rotate rotate = new Rotate(ProjectConstants.WHITE_BOARD_ROTATION_ANGLE,
-                    ProjectConstants.WINDOW_SIZE/2 ,ProjectConstants.WINDOW_SIZE/2,0,Rotate.X_AXIS);
+                    ProjectConstants.WINDOW_SIZE / 2, ProjectConstants.WINDOW_SIZE / 2, 0, Rotate.X_AXIS);
             chessGroup.getTransforms().add(rotate);
-            adjustmentForWhitePlayer(0,15);
-            adjustmentForWhitePlayer(48,63);
+            adjustmentForWhitePlayer(0, 15);
+            adjustmentForWhitePlayer(48, 63);
         }
         return chessGroup;
     }
 
-    private void adjustmentForWhitePlayer(int startBlockNumber,int stopBlockNumber){
-        for (int index = startBlockNumber ; index <= stopBlockNumber ; index++){
+    private void adjustmentForWhitePlayer(int startBlockNumber, int stopBlockNumber) {
+        for (int index = startBlockNumber; index <= stopBlockNumber; index++) {
             Block block = blockMap.get(index);
             Rotate rotate = new Rotate(ProjectConstants.WHITE_BOARD_ROTATION_ANGLE,
-                    ProjectConstants.CELL_SIZE/2 ,ProjectConstants.CELL_SIZE/2,0,Rotate.Z_AXIS);
+                    ProjectConstants.CELL_SIZE / 2, ProjectConstants.CELL_SIZE / 2, 0, Rotate.Z_AXIS);
             block.getNode().getTransforms().clear();
             block.getNode().getTransforms().add(rotate);
         }
     }
 
-    public boolean isWhite() {
-        return isWhite;
+    public Map<Integer, Block> getBlockMap() {
+        return blockMap;
     }
 
-    public void setWhite(boolean white) {
-        isWhite = white;
+    public boolean isIsfirstPlayer() {
+        return isfirstPlayer;
+    }
+
+    public void setIsfirstPlayer(boolean isfirstPlayer) {
+        this.isfirstPlayer = isfirstPlayer;
+    }
+
+    public boolean isMyTurn() {
+        return isMyTurn;
+    }
+
+    public void setMyTurn(boolean myTurn) {
+        isMyTurn = myTurn;
     }
 
     public Block getSelectedBlock() {
@@ -120,5 +136,21 @@ public class ShapeService {
 
     public void setSelectedBlock(Block selectedBlock) {
         this.selectedBlock = selectedBlock;
+    }
+
+    public Block getDestinationBlock() {
+        return destinationBlock;
+    }
+
+    public void setDestinationBlock(Block destinationBlock) {
+        this.destinationBlock = destinationBlock;
+    }
+
+    public List<Block> getTargetBlockList() {
+        return targetBlockList;
+    }
+
+    public void setTargetBlockList(List<Block> targetBlockList) {
+        this.targetBlockList = targetBlockList;
     }
 }

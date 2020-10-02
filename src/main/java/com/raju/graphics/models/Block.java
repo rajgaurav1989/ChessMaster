@@ -8,7 +8,7 @@ public class Block {
     private Group node;
     private boolean isFree = true;
     private int blockNum;
-    private Boolean isWhite = null;
+    private Boolean isWhite = null;      // to maintain that the block is occupied by which opponent for white player it is true else for black it is false
     private PieceType pieceType;
 
     public Block(Group node, int blockNum, boolean isWhite) {
