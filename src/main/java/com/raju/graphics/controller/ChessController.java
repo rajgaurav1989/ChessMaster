@@ -68,7 +68,7 @@ public class ChessController {
                             return;
                         }
                         chessMasterService.unColourPreviousTargetBlock(shapeService.getTargetBlockList());
-                        chessMasterService.movePiece(selectedBlock, destinationBlock);
+                        chessMasterService.movePiece(selectedBlock, destinationBlock,threadMyPiece);
                         shapeService.setSelectedBlock(null);
                         int kingBlockIndexForCheck = chessMasterService.getKingBlockIndexForCheckMove(blockMap, destinationBlock, threadMyPiece);
 

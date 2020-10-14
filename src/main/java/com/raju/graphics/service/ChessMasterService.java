@@ -13,6 +13,7 @@ import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.Rotate;
 
 import java.awt.*;
 import java.util.*;
@@ -279,7 +280,8 @@ public class ChessMasterService {
         return indicesList;
     }
 
-    public void movePiece(Block srcBlock, Block destBlock) {
+    public void movePiece(Block srcBlock, Block destBlock,boolean isFirstPlayer) {
+        boolean isRotate = srcBlock.getWhite() && isFirstPlayer;
         List<Node> destChildNodes = destBlock.getNode().getChildren();
         List<Node> srcChildNodes = srcBlock.getNode().getChildren();
         if (!destBlock.isFree()) {
@@ -297,6 +299,12 @@ public class ChessMasterService {
         Rectangle rectangle = getRectangleFromBlock(srcBlock);
         rectangle.setFill(getFillColor(srcBlock.getBlockNum()));
         rectangle.setOpacity(1);
+        if (isRotate){
+            Rotate rotate = new Rotate(ProjectConstants.WHITE_BOARD_ROTATION_ANGLE,
+                    ProjectConstants.CELL_SIZE / 2, ProjectConstants.CELL_SIZE / 2, 0, Rotate.X_AXIS);
+            destBlock.getNode().getTransforms().clear();
+            destBlock.getNode().getTransforms().add(rotate);
+        }
     }
 
 
