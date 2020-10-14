@@ -61,6 +61,7 @@ public class ChessController {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
+                        chessMasterService.unColourPreviousTargetBlock(shapeService.getTargetBlockList());
                         chessMasterService.movePiece(selectedBlock, destinationBlock);
                         shapeService.setSelectedBlock(null);
                         shapeService.setMyTurn(!isMyTurn);

@@ -300,11 +300,8 @@ public class ChessMasterService {
     public void handleClickEvent(ShapeService shapeService, Block selectedBlock, boolean isFirstPlayer) {
         Map<Integer, Block> blockMap = shapeService.getBlockMap();
         List<Block> targetBlocks = shapeService.getTargetBlockList();
-        if (targetBlocks != null && !targetBlocks.isEmpty()) {
-            unColourPreviousTargetBlock(targetBlocks);
-            targetBlocks.clear();
-        }
-        targetBlocks = chessMasterService.getTargetBlocks(blockMap, selectedBlock, isFirstPlayer);
+        unColourPreviousTargetBlock(targetBlocks);
+        targetBlocks = getTargetBlocks(blockMap, selectedBlock, isFirstPlayer);
         if (targetBlocks != null && !targetBlocks.isEmpty()) {
             fillColorInChessBlocks(targetBlocks);
         }
@@ -320,6 +317,9 @@ public class ChessMasterService {
     }
 
     public void unColourPreviousTargetBlock(List<Block> blockList) {
+        if (blockList == null || blockList.isEmpty()){
+            return;
+        }
         blockList.forEach(element -> {
             Rectangle rectangle = getRectangleFromBlock(element);
             Paint fillColor = getFillColor(element.getBlockNum());
@@ -328,6 +328,7 @@ public class ChessMasterService {
                 rectangle.setOpacity(ProjectConstants.OPACITY_FACTOR);
             }
         });
+        blockList.clear();
     }
 
     public Paint getFillColor(int blockNum) {
@@ -344,7 +345,7 @@ public class ChessMasterService {
     }
 
     public int getKingBlockIndexForCheckMove(Map<Integer, Block> blockMap, Block block, boolean isFirstPlayer) {
-        List<Block> targetBlocks = chessMasterService.getTargetBlocks(blockMap, block, isFirstPlayer);
+        List<Block> targetBlocks = getTargetBlocks(blockMap, block, isFirstPlayer);
         Optional<Block> kingBlock =
                 targetBlocks.stream().filter(element -> element.getPieceType() == PieceType.KING && element.getWhite() != isFirstPlayer).findFirst();
         if (!kingBlock.isPresent()) {
