@@ -118,6 +118,19 @@ public class ChessMasterService {
         return -1;
     }
 
+    private int checkDiagonalPositionForPawn(Map<Integer, Block> blockMap, int rowIndex, int colIndex, boolean isFirstPlayer){
+        boolean isSafeBlock = isSafeRowColIndex(rowIndex, colIndex);
+        if (!isSafeBlock) {
+            return -1;
+        }
+        int blockNum = getBlockNum(rowIndex, colIndex);
+        Block block = blockMap.get(blockNum);
+        if (!block.isFree() && block.getWhite() != null && block.getWhite() != isFirstPlayer) {
+            return blockNum;
+        }
+        return -1;
+    }
+
     private List<Integer> getAllSingleLinearIndices(Map<Integer, Block> blockMap, int rowIndex, int colIndex, boolean isFirstPlayer) {
         List<Integer> indicesList = new ArrayList<>();
         int index = checkFreeOrIsOwnPieceBlock(blockMap, rowIndex, colIndex - 1, isFirstPlayer);
@@ -159,12 +172,12 @@ public class ChessMasterService {
             indicesList.add(index);
         }
 
-        index = checkFreeOrIsOwnPieceBlock(blockMap, targetRowIndex, colIndex - 1, isFirstPlayer);
+        index = checkDiagonalPositionForPawn(blockMap, targetRowIndex, colIndex - 1, isFirstPlayer);
         if (index >= 0) {
             indicesList.add(index);
         }
 
-        index = checkFreeOrIsOwnPieceBlock(blockMap, targetRowIndex, colIndex + 1, isFirstPlayer);
+        index = checkDiagonalPositionForPawn(blockMap, targetRowIndex, colIndex + 1, isFirstPlayer);
         if (index >= 0) {
             indicesList.add(index);
         }

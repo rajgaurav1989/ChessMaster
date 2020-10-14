@@ -35,8 +35,10 @@ public class ChessController {
         return chessController;
     }
 
-    public EventHandler getClickEventHandler(ShapeService shapeService, Block destinationBlock, boolean isFirstPlayer, boolean isMyTurn) {
+    public EventHandler getClickEventHandler(ShapeService shapeService, Block destinationBlock) {
         return event -> {
+            boolean isFirstPlayer = shapeService.isIsfirstPlayer();
+            boolean isMyTurn = shapeService.isMyTurn();
             String opponentMsg = shapeService.getSocketMsg();
             boolean isMyPiece = isFirstPlayer;
             Block selectedBlock = shapeService.getSelectedBlock();
@@ -61,10 +63,13 @@ public class ChessController {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
+                        List<Block> targetBlockList = shapeService.getTargetBlockList();
+                        if (!targetBlockList.contains(destinationBlock)){
+                            return;
+                        }
                         chessMasterService.unColourPreviousTargetBlock(shapeService.getTargetBlockList());
                         chessMasterService.movePiece(selectedBlock, destinationBlock);
                         shapeService.setSelectedBlock(null);
-                        shapeService.setMyTurn(!isMyTurn);
                         int kingBlockIndexForCheck = chessMasterService.getKingBlockIndexForCheckMove(blockMap, destinationBlock, threadMyPiece);
 
                         if (kingBlockIndexForCheck >= 0){
@@ -78,8 +83,12 @@ public class ChessController {
                         }
 
                         if (StringUtils.isBlank(opponentMsg)) {
+                            shapeService.setMyTurn(false);
                             pushMsgIntoSocket(EventType.PIECE_MOVE.toString() + ProjectConstants.EVENT_SEPARATOR + selectedBlock.getBlockNum()
                                     + ProjectConstants.EVENT_SEPARATOR + destinationBlock.getBlockNum() + ProjectConstants.EVENT_SEPARATOR);
+                        }
+                        else {
+                            shapeService.setMyTurn(true);
                         }
                         shapeService.setSocketMsg(null);
                     }
