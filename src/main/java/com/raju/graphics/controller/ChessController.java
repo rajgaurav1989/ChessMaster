@@ -76,8 +76,10 @@ public class ChessController {
                             shapeService.setTargetBlockList(targetBlocks);
                         }
 
-                        pushMsgIntoSocket(EventType.PIECE_MOVE.toString() + ProjectConstants.EVENT_SEPARATOR + selectedBlock.getBlockNum()
-                                + ProjectConstants.EVENT_SEPARATOR + destinationBlock.getBlockNum() + ProjectConstants.EVENT_SEPARATOR);
+                        if (StringUtils.isBlank(opponentMsg)) {
+                            pushMsgIntoSocket(EventType.PIECE_MOVE.toString() + ProjectConstants.EVENT_SEPARATOR + selectedBlock.getBlockNum()
+                                    + ProjectConstants.EVENT_SEPARATOR + destinationBlock.getBlockNum() + ProjectConstants.EVENT_SEPARATOR);
+                        }
                         shapeService.setSocketMsg(null);
                     }
                 });

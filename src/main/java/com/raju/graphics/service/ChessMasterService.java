@@ -275,7 +275,6 @@ public class ChessMasterService {
         Node pieceNode = srcChildNodes.get(0);
         destChildNodes.add(0, pieceNode);
         srcChildNodes.remove(pieceNode);
-        System.out.println("line 278 "+srcBlock.getNode().getChildren().size()+"\t"+destBlock.getNode().getChildren().size());
         destBlock.setWhite(srcBlock.getWhite());
         srcBlock.setWhite(null);
         srcBlock.setFree(true);
