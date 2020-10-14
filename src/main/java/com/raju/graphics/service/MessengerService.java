@@ -18,7 +18,6 @@ public class MessengerService {
     private static MessengerService messengerService;
     private ChessMasterService chessMasterService;
     private ShapeService shapeService;
-    private List<Block> clickTargetBlockList;
 
     private MessengerService() {
         this.chessMasterService = ChessMasterService.getInstance();
@@ -38,37 +37,40 @@ public class MessengerService {
         int blockIndex = Integer.parseInt(infoArray[1]);
         boolean isFirstPlayer = shapeService.isIsfirstPlayer();
         Map<Integer, Block> blockMap = shapeService.getBlockMap();
+        shapeService.setSocketMsg(eventType.name());
         switch (eventType) {
             case PIECE_SELECT:
                 Block selectedBlock = blockMap.get(blockIndex);
-                if (clickTargetBlockList != null && !clickTargetBlockList.isEmpty()) {
-                    chessMasterService.unColourPreviousTargetBlock(clickTargetBlockList);
-                }
-                clickTargetBlockList = chessMasterService.getTargetBlocks(blockMap, selectedBlock, !isFirstPlayer);
-                chessMasterService.fillColorInChessBlocks(clickTargetBlockList);
+                shapeService.setSelectedBlock(selectedBlock);
+                fireClickEvent(selectedBlock);
                 break;
             case PIECE_MOVE:
                 Block attackingBlock = blockMap.get(blockIndex);
+                shapeService.setSelectedBlock(attackingBlock);
                 Block targetBlock = blockMap.get(Integer.parseInt(infoArray[2]));
-                Group group = targetBlock.getNode();
-                int targetBlockNum = targetBlock.getBlockNum();
-                int rowNum = targetBlockNum / ProjectConstants.NUM_CELLS_IN_ROW;
-                int colNum = targetBlockNum % ProjectConstants.NUM_CELLS_IN_ROW;
-                MouseEvent mouseEvent = new MouseEvent(MouseEvent.MOUSE_CLICKED,
-                        colNum * ProjectConstants.CELL_SIZE, rowNum * ProjectConstants.CELL_SIZE,
-                        colNum * ProjectConstants.CELL_SIZE, rowNum * ProjectConstants.CELL_SIZE, MouseButton.PRIMARY, 1,
-                        true, true, true, true, true, true,
-                        true, true, true, true, null);
-                Event.fireEvent(group, mouseEvent);
-                boolean isCheckMove = Integer.parseInt(infoArray[3]) < 0;
-                chessMasterService.movePiece(attackingBlock, targetBlock);
-                if (isCheckMove) {
-                    int mayBeKingBlockNum = Integer.parseInt(infoArray[3]);
-                    Paint paint = chessMasterService.getFillColor(mayBeKingBlockNum);
-                    chessMasterService.colorKingBlockForCheckMove(blockMap.get(mayBeKingBlockNum), paint);
-                }
-                shapeService.setMyTurn(true);
+                fireClickEvent(targetBlock);
+//                boolean isCheckMove = Integer.parseInt(infoArray[3]) < 0;
+//                chessMasterService.movePiece(attackingBlock, targetBlock);
+//                if (isCheckMove) {
+//                    int mayBeKingBlockNum = Integer.parseInt(infoArray[3]);
+//                    Paint paint = chessMasterService.getFillColor(mayBeKingBlockNum);
+//                    chessMasterService.colorKingBlockForCheckMove(blockMap.get(mayBeKingBlockNum), paint);
+//                }
+//                shapeService.setMyTurn(true);
         }
+    }
+
+    private void fireClickEvent(Block targetBlock) {
+        Group group = targetBlock.getNode();
+        int targetBlockNum = targetBlock.getBlockNum();
+        int rowNum = targetBlockNum / ProjectConstants.NUM_CELLS_IN_ROW;
+        int colNum = targetBlockNum % ProjectConstants.NUM_CELLS_IN_ROW;
+        MouseEvent mouseEvent = new MouseEvent(MouseEvent.MOUSE_CLICKED,
+                colNum * ProjectConstants.CELL_SIZE, rowNum * ProjectConstants.CELL_SIZE,
+                colNum * ProjectConstants.CELL_SIZE, rowNum * ProjectConstants.CELL_SIZE, MouseButton.PRIMARY, 1,
+                true, true, true, true, true, true,
+                true, true, true, true, null);
+        Event.fireEvent(group, mouseEvent);
     }
 
 }

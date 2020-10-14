@@ -11,8 +11,10 @@ import javafx.event.EventHandler;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -35,26 +37,53 @@ public class ChessController {
     public EventHandler getClickEventHandler(ShapeService shapeService, Block destinationBlock, boolean isFirstPlayer, boolean isMyTurn) {
         return event -> {
             System.out.println("line 37 click event happened "+destinationBlock.getBlockNum());
+            String opponentMsg = shapeService.getSocketMsg();
+            boolean isMyPiece = isFirstPlayer;
             Block selectedBlock = shapeService.getSelectedBlock();
-            if (!isMyTurn || !isSelectOrMoveActionAllowed(selectedBlock,destinationBlock,isFirstPlayer)) {
+            if (isMyTurn && !isSelectOrMoveActionAllowed(selectedBlock,destinationBlock,isMyPiece) ||
+                    (!isMyTurn && StringUtils.isBlank(opponentMsg))) {
                 return;
             }
+            if (!isMyTurn){
+                isMyPiece = !isFirstPlayer;
+            }
             String eventMsg = "";
-
-            if (isPieceMoveEvent(selectedBlock, destinationBlock, isFirstPlayer)) {
+            boolean isPieceMove ;
+            if (StringUtils.isNotBlank(opponentMsg)){
+                isPieceMove = selectedBlock != null ;
+            }
+            else {
+                isPieceMove = isPieceMoveEvent(selectedBlock, destinationBlock, isMyPiece);
+            }
+            Map<Integer,Block> blockMap = shapeService.getBlockMap();
+            if (isPieceMove) {
                 chessMasterService.movePiece(selectedBlock, destinationBlock);
                 shapeService.setSelectedBlock(null);
-                shapeService.setMyTurn(false);
+                shapeService.setMyTurn(!isMyTurn);
+
+                int kingBlockIndexForCheck = chessMasterService.getKingBlockIndexForCheckMove(blockMap, destinationBlock, isMyPiece);
 
                 eventMsg = EventType.PIECE_MOVE.toString() + ProjectConstants.EVENT_SEPARATOR + selectedBlock.getBlockNum()
-                        + ProjectConstants.EVENT_SEPARATOR + destinationBlock.getBlockNum() + ProjectConstants.EVENT_SEPARATOR +
-                        chessMasterService.getKingBlockIndexForCheckMove(shapeService.getBlockMap(), destinationBlock, isFirstPlayer);
+                        + ProjectConstants.EVENT_SEPARATOR + destinationBlock.getBlockNum() + ProjectConstants.EVENT_SEPARATOR ;
+                if (kingBlockIndexForCheck >= 0){
+                    Block kingBlock = blockMap.get(kingBlockIndexForCheck) ;
+                    chessMasterService.colorKingBlockForCheckMove(kingBlock, ProjectConstants.CHECK_MOVE_COLOR);
+                    chessMasterService.colorKingBlockForCheckMove(destinationBlock,ProjectConstants.TARGET_COLOR);
+                    List<Block> targetBlocks = new ArrayList<>();
+                    targetBlocks.add(destinationBlock);
+                    targetBlocks.add(kingBlock);
+                    shapeService.setTargetBlockList(targetBlocks);
+                }
+
             } else {
                 shapeService.setSelectedBlock(destinationBlock);
                 eventMsg = EventType.PIECE_SELECT.toString() + ProjectConstants.EVENT_SEPARATOR + destinationBlock.getBlockNum();
-                chessMasterService.handleClickEvent(shapeService, destinationBlock, isFirstPlayer);
+                chessMasterService.handleClickEvent(shapeService, destinationBlock, isMyPiece);
             }
-            pushMsgIntoSocket(eventMsg);
+            shapeService.setSocketMsg(null);
+            if(isMyTurn) {
+                pushMsgIntoSocket(eventMsg);
+            }
         };
     }
 

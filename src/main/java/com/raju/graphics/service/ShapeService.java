@@ -25,6 +25,7 @@ public class ShapeService {
     private Block selectedBlock;
     private Block destinationBlock;
     private List<Block> targetBlockList;
+    private String socketMsg ;
 
     private ShapeService() {
 
@@ -152,5 +153,13 @@ public class ShapeService {
 
     public void setTargetBlockList(List<Block> targetBlockList) {
         this.targetBlockList = targetBlockList;
+    }
+
+    public String getSocketMsg() {
+        return socketMsg;
+    }
+
+    public void setSocketMsg(String socketMsg) {
+        this.socketMsg = socketMsg;
     }
 }
