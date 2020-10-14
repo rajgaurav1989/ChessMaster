@@ -214,6 +214,23 @@ public class ChessMasterService {
         if (index >= 0) {
             indicesList.add(index);
         }
+
+        index = checkFreeOrIsOwnPieceBlock(blockMap, rowIndex + 2, colIndex + 1, isFirstPlayer);
+        if (index >= 0) {
+            indicesList.add(index);
+        }
+        index = checkFreeOrIsOwnPieceBlock(blockMap, rowIndex + 2, colIndex - 1, isFirstPlayer);
+        if (index >= 0) {
+            indicesList.add(index);
+        }
+        index = checkFreeOrIsOwnPieceBlock(blockMap, rowIndex - 2, colIndex + 1, isFirstPlayer);
+        if (index >= 0) {
+            indicesList.add(index);
+        }
+        index = checkFreeOrIsOwnPieceBlock(blockMap, rowIndex - 2, colIndex - 1, isFirstPlayer);
+        if (index >= 0) {
+            indicesList.add(index);
+        }
         return indicesList;
     }
 
@@ -280,8 +297,8 @@ public class ChessMasterService {
         return indicesList;
     }
 
-    public void movePiece(Block srcBlock, Block destBlock,boolean isFirstPlayer) {
-        boolean isRotate = srcBlock.getWhite() && isFirstPlayer;
+    public void movePiece(Block srcBlock, Block destBlock,boolean isMyTurn) {
+        boolean isRotate = (srcBlock.getWhite() && isMyTurn) || (!srcBlock.getWhite() && !isMyTurn);
         List<Node> destChildNodes = destBlock.getNode().getChildren();
         List<Node> srcChildNodes = srcBlock.getNode().getChildren();
         if (!destBlock.isFree()) {
