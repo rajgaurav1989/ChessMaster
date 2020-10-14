@@ -56,4 +56,14 @@ public class Block {
     public void setPieceType(PieceType pieceType) {
         this.pieceType = pieceType;
     }
+
+    @Override
+    public String toString() {
+        return "Block{" +
+                "isFree=" + isFree +
+                ", blockNum=" + blockNum +
+                ", isWhite=" + isWhite +
+                ", pieceType=" + pieceType +
+                '}';
+    }
 }

@@ -16,11 +16,9 @@ import java.util.Map;
 public class MessengerService {
 
     private static MessengerService messengerService;
-    private ChessMasterService chessMasterService;
     private ShapeService shapeService;
 
     private MessengerService() {
-        this.chessMasterService = ChessMasterService.getInstance();
         this.shapeService = ShapeService.getInstance();
     }
 
@@ -49,14 +47,6 @@ public class MessengerService {
                 shapeService.setSelectedBlock(attackingBlock);
                 Block targetBlock = blockMap.get(Integer.parseInt(infoArray[2]));
                 fireClickEvent(targetBlock);
-//                boolean isCheckMove = Integer.parseInt(infoArray[3]) < 0;
-//                chessMasterService.movePiece(attackingBlock, targetBlock);
-//                if (isCheckMove) {
-//                    int mayBeKingBlockNum = Integer.parseInt(infoArray[3]);
-//                    Paint paint = chessMasterService.getFillColor(mayBeKingBlockNum);
-//                    chessMasterService.colorKingBlockForCheckMove(blockMap.get(mayBeKingBlockNum), paint);
-//                }
-//                shapeService.setMyTurn(true);
         }
     }
 
