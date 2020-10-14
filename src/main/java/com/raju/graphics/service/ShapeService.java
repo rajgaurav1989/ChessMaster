@@ -61,7 +61,7 @@ public class ShapeService {
         group.translateXProperty().set(xCoord);
         group.translateYProperty().set(yCoord);
         group.setId(String.valueOf(blockNum));
-        group.setOnMouseClicked(ChessController.getInstance().getClickEventHandler(shapeService, block, isfirstPlayer,isMyTurn));
+        group.setOnMouseClicked(ChessController.getInstance().getClickEventHandler(shapeService, block));
         blockMap.put(blockNum, block);
         return group;
     }
