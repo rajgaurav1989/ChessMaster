@@ -13,6 +13,7 @@ import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.Rotate;
 
 import java.awt.*;
 import java.util.*;
@@ -118,6 +119,19 @@ public class ChessMasterService {
         return -1;
     }
 
+    private int checkDiagonalPositionForPawn(Map<Integer, Block> blockMap, int rowIndex, int colIndex, boolean isFirstPlayer){
+        boolean isSafeBlock = isSafeRowColIndex(rowIndex, colIndex);
+        if (!isSafeBlock) {
+            return -1;
+        }
+        int blockNum = getBlockNum(rowIndex, colIndex);
+        Block block = blockMap.get(blockNum);
+        if (!block.isFree() && block.getWhite() != null && block.getWhite() != isFirstPlayer) {
+            return blockNum;
+        }
+        return -1;
+    }
+
     private List<Integer> getAllSingleLinearIndices(Map<Integer, Block> blockMap, int rowIndex, int colIndex, boolean isFirstPlayer) {
         List<Integer> indicesList = new ArrayList<>();
         int index = checkFreeOrIsOwnPieceBlock(blockMap, rowIndex, colIndex - 1, isFirstPlayer);
@@ -159,12 +173,12 @@ public class ChessMasterService {
             indicesList.add(index);
         }
 
-        index = checkFreeOrIsOwnPieceBlock(blockMap, targetRowIndex, colIndex - 1, isFirstPlayer);
+        index = checkDiagonalPositionForPawn(blockMap, targetRowIndex, colIndex - 1, isFirstPlayer);
         if (index >= 0) {
             indicesList.add(index);
         }
 
-        index = checkFreeOrIsOwnPieceBlock(blockMap, targetRowIndex, colIndex + 1, isFirstPlayer);
+        index = checkDiagonalPositionForPawn(blockMap, targetRowIndex, colIndex + 1, isFirstPlayer);
         if (index >= 0) {
             indicesList.add(index);
         }
@@ -266,7 +280,8 @@ public class ChessMasterService {
         return indicesList;
     }
 
-    public void movePiece(Block srcBlock, Block destBlock) {
+    public void movePiece(Block srcBlock, Block destBlock,boolean isFirstPlayer) {
+        boolean isRotate = srcBlock.getWhite() && isFirstPlayer;
         List<Node> destChildNodes = destBlock.getNode().getChildren();
         List<Node> srcChildNodes = srcBlock.getNode().getChildren();
         if (!destBlock.isFree()) {
@@ -284,6 +299,12 @@ public class ChessMasterService {
         Rectangle rectangle = getRectangleFromBlock(srcBlock);
         rectangle.setFill(getFillColor(srcBlock.getBlockNum()));
         rectangle.setOpacity(1);
+        if (isRotate){
+            Rotate rotate = new Rotate(ProjectConstants.WHITE_BOARD_ROTATION_ANGLE,
+                    ProjectConstants.CELL_SIZE / 2, ProjectConstants.CELL_SIZE / 2, 0, Rotate.X_AXIS);
+            destBlock.getNode().getTransforms().clear();
+            destBlock.getNode().getTransforms().add(rotate);
+        }
     }
 
 
